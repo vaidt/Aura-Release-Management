@@ -1,0 +1,38 @@
+name: RM-0 validation
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - uses: actions/setup-python@v5.6.0
+        with:
+          python-version: "3.12.8"
+      - name: Install locked dependencies
+        run: |
+          python -m pip install --disable-pip-version-check -r requirements.lock
+          python -m pip install --disable-pip-version-check --no-deps --no-build-isolation -e .
+      - name: Static validation
+        run: python -m ruff check .
+      - name: Unit, schema, signing, and fail-closed tests
+        run: |
+          mkdir -p artifacts
+          python -m pytest --junitxml=artifacts/rm-m0-tests.xml
+      - name: Run local RM pilot
+        run: |
+          python -m release.manifest examples/AURA_RELEASE_MANIFEST_M0.example.json --output artifacts/pilot-manifest.json
+          python -m release.verify artifacts/pilot-manifest.json > artifacts/pilot-verification.json
+          python -c "import json; d=json.load(open('artifacts/pilot-verification.json', encoding='utf-8')); assert d['ok'] and d['status'] == 'DRAFT'"
+      - name: Check workflow evidence
+        if: always()
+        run: |
+          test -s artifacts/rm-m0-tests.xml
+          test -s artifacts/pilot-verification.json
