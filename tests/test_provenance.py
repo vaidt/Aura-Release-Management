@@ -23,6 +23,7 @@ class ProvenanceTests(unittest.TestCase):
             evidence if evidence is not None else context["evidence"],
             policy if policy is not None else context["policy"],
             context["repositories"],
+            context["golden_corpus"],
         )
 
     def test_exact_commits_tag_and_repository_evidence_pass(self):
@@ -99,6 +100,11 @@ class ProvenanceTests(unittest.TestCase):
         evidence["tck"]["evidence_path"] = "../outside.json"
         with self.assertRaises(VerificationError):
             self.verify(evidence=evidence)
+
+    def test_golden_corpus_is_hashed_from_local_bytes(self):
+        self.context["golden_corpus"].write_bytes(b"modified corpus\n")
+        with self.assertRaisesRegex(VerificationError, "Golden Corpus"):
+            self.verify()
 
 
 if __name__ == "__main__":

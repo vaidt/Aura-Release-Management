@@ -16,7 +16,6 @@ REPOSITORIES = {
 }
 ARTIFACT_REPOSITORY = "registry.example/aura/app"
 ARTIFACT_DIGEST = "sha256:" + "a" * 64
-CORPUS_DIGEST = "b" * 64
 
 
 def _git(path: Path, *args: str) -> str:
@@ -65,6 +64,10 @@ def _json_bytes(value: dict[str, Any]) -> bytes:
 
 def make_context(root: Path) -> dict[str, Any]:
     root.mkdir(parents=True, exist_ok=True)
+    corpus_bytes = b"RM-0 Golden Corpus fixture\n"
+    golden_corpus_path = root / "golden-corpus.bin"
+    golden_corpus_path.write_bytes(corpus_bytes)
+    corpus_digest = hashlib.sha256(corpus_bytes).hexdigest()
     repositories = {role: root / role for role in REPOSITORIES}
     for role, path in repositories.items():
         _init(path)
@@ -95,7 +98,7 @@ def make_context(root: Path) -> dict[str, Any]:
         {
             "matrix_version": "M0-test-1",
             "artifact_digest": ARTIFACT_DIGEST,
-            "golden_corpus_sha256": CORPUS_DIGEST,
+            "golden_corpus_sha256": corpus_digest,
         }
     )
     _write(repositories["tck"], "rm-evidence.json", tck_evidence)
@@ -107,7 +110,7 @@ def make_context(root: Path) -> dict[str, Any]:
 
     inputs = {
         "specification_commit_sha": shas["specification"],
-        "golden_corpus_sha256": CORPUS_DIGEST,
+        "golden_corpus_sha256": corpus_digest,
         "vnext_commit_sha": shas["implementation"],
         "tck_commit_sha": shas["tck"],
         "assurance_commit_sha": shas["assurance"],
@@ -172,7 +175,7 @@ def make_context(root: Path) -> dict[str, Any]:
                     "matrix_version": "M0-test-1",
                     "evidence_sha256": hashlib.sha256(tck_evidence).hexdigest(),
                     "tested_artifact_digest": ARTIFACT_DIGEST,
-                    "golden_corpus_sha256": CORPUS_DIGEST,
+                    "golden_corpus_sha256": corpus_digest,
                 },
                 "assurance": {
                     "evidence_sha256": hashlib.sha256(
@@ -188,4 +191,5 @@ def make_context(root: Path) -> dict[str, Any]:
         "policy": policy,
         "repositories": repositories,
         "shas": shas,
+        "golden_corpus": golden_corpus_path,
     }

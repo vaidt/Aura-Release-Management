@@ -60,6 +60,7 @@ class FailClosedTests(unittest.TestCase):
                 evidence=self.context["evidence"],
                 policy=self.context["policy"],
                 repository_paths=self.context["repositories"],
+                golden_corpus_path=self.context["golden_corpus"],
                 public_keys={"test": public_bytes},
             )
 
@@ -113,6 +114,67 @@ class FailClosedTests(unittest.TestCase):
         path.write_text('{"payload":')
         result = self.run_cli("-m", "release.verify", str(path))
         self.assertEqual(result.returncode, 1)
+
+    def test_verified_manifest_signing_and_verification_clis(self):
+        private = Ed25519PrivateKey.generate()
+        private_bytes = private.private_bytes(
+            encoding=serialization.Encoding.Raw,
+            format=serialization.PrivateFormat.Raw,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
+        public_bytes = private.public_key().public_bytes(
+            encoding=serialization.Encoding.Raw,
+            format=serialization.PublicFormat.Raw,
+        )
+        manifest_path = self.root / "verified.json"
+        evidence_path = self.root / "evidence.json"
+        policy_path = self.root / "policy.json"
+        signed_path = self.root / "signed.json"
+        manifest_path.write_text(json.dumps(self.context["manifest"]))
+        evidence_path.write_text(json.dumps(self.context["evidence"]))
+        policy_path.write_text(json.dumps(self.context["policy"]))
+        args = [
+            "--evidence",
+            str(evidence_path),
+            "--golden-corpus",
+            str(self.context["golden_corpus"]),
+            "--policy",
+            str(policy_path),
+        ]
+        for role, path in self.context["repositories"].items():
+            args.extend(("--repository", f"{role}={path}"))
+        signing_env = os.environ.copy()
+        signing_env["AURA_RM_ED25519_PRIVATE_KEY_B64"] = base64.b64encode(
+            private_bytes
+        ).decode("ascii")
+        signing_env["AURA_RM_ED25519_KEY_ID"] = "test-key"
+        signed = self.run_cli(
+            "-m",
+            "release.signing",
+            str(manifest_path),
+            *args,
+            "--output",
+            str(signed_path),
+            env=signing_env,
+        )
+        self.assertEqual(signed.returncode, 0, signed.stdout + signed.stderr)
+
+        verify_env = os.environ.copy()
+        verify_env["AURA_RM_TRUSTED_PUBLIC_KEYS_JSON"] = json.dumps(
+            {"test-key": base64.b64encode(public_bytes).decode("ascii")}
+        )
+        verified = self.run_cli(
+            "-m",
+            "release.verify",
+            str(signed_path),
+            *args,
+            env=verify_env,
+        )
+        self.assertEqual(verified.returncode, 0, verified.stdout + verified.stderr)
+        result = json.loads(verified.stdout)
+        self.assertEqual(result["status"], "SIGNED")
+        self.assertTrue(result["verification_gates_passed"])
+        self.assertTrue(result["signature_valid"])
 
 
 if __name__ == "__main__":

@@ -47,9 +47,13 @@ that committed file's raw bytes. Its presence in the declared vNEXT commit
 tree binds the artifact attestation to that immutable commit without requiring
 an impossible self-referential commit SHA inside the commit itself.
 
-The TCK commit must contain the JSON file named by `tck.evidence_path`, with
-`matrix_version`, `artifact_digest`, and `golden_corpus_sha256` string fields.
+The TCK commit must contain the closed JSON object named by `tck.evidence_path`,
+with exactly the `matrix_version`, `artifact_digest`, and
+`golden_corpus_sha256` string fields.
 Its raw-file SHA-256 is the signed `provenance.tck.evidence_sha256`. The
+verifier also requires an explicit local `--golden-corpus` file and hashes its
+raw bytes in streaming chunks; that derived SHA-256 must match both
+`release_inputs.golden_corpus_sha256` and the TCK evidence. The
 assurance file named by `assurance.evidence_path` is opaque; its raw-file
 SHA-256 is the signed `provenance.assurance.evidence_sha256`. Evidence paths
 must be relative paths inside their respective Git trees. RM-0 does not infer
@@ -156,8 +160,9 @@ Verify a DRAFT without asserting provenance:
 python -m release.verify examples/AURA_RELEASE_MANIFEST_M0.example.json
 ```
 
-For VERIFIED-or-later manifests, pass the separate evidence JSON and all four
-local repository paths with repeated `--repository role=path` options.
+For VERIFIED-or-later manifests, pass the separate evidence JSON, the local
+Golden Corpus file, and all four local repository paths with repeated
+`--repository role=path` options.
 SIGNED-or-later verification also needs the trusted-public-key environment
 variable. RELEASE_PROMOTED additionally needs a separate
 `--promotion-record` JSON file. `release.provenance` and `release.signing`

@@ -121,6 +121,7 @@ def _parser() -> argparse.ArgumentParser:
         metavar="ROLE=PATH",
         help="local Git repository path; repeat once per protected role",
     )
+    parser.add_argument("--golden-corpus", help="local Golden Corpus file to hash")
     parser.add_argument("--policy")
     parser.add_argument("--output", help="output signed manifest path")
     return parser
@@ -156,6 +157,7 @@ def main(argv: list[str] | None = None) -> int:
             evidence=evidence,
             policy=policy,
             repository_paths=paths,
+            golden_corpus_path=args.golden_corpus,
         )
         signed = sign_manifest(manifest, private_key, key_id)
         public_key = Ed25519PrivateKey.from_private_bytes(

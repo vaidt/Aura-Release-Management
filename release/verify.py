@@ -61,6 +61,7 @@ def verify_manifest(
     evidence: Any = None,
     policy: Any = None,
     repository_paths: dict[str, str] | None = None,
+    golden_corpus_path: str | None = None,
     public_keys: dict[str, bytes] | None = None,
     promotion_record: Any = None,
 ) -> dict[str, Any]:
@@ -87,7 +88,13 @@ def verify_manifest(
         if evidence is None:
             raise RefusalError("separate provenance evidence is required")
         trusted_policy = policy if policy is not None else read_json_file(POLICY_PATH)
-        verify_provenance(manifest, evidence, trusted_policy, repository_paths)
+        verify_provenance(
+            manifest,
+            evidence,
+            trusted_policy,
+            repository_paths,
+            golden_corpus_path,
+        )
         if payload["specification"]["commit_sha"] != release_inputs[
             "specification_commit_sha"
         ]:
@@ -127,6 +134,7 @@ def _parser() -> argparse.ArgumentParser:
         metavar="ROLE=PATH",
         help="local Git repository path; repeat once per protected role",
     )
+    parser.add_argument("--golden-corpus", help="local Golden Corpus file to hash")
     return parser
 
 
@@ -161,6 +169,7 @@ def main(argv: list[str] | None = None) -> int:
             evidence=evidence,
             policy=policy,
             repository_paths=paths,
+            golden_corpus_path=args.golden_corpus,
             public_keys=keys,
             promotion_record=promotion,
         )

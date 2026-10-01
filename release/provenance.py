@@ -163,11 +163,23 @@ def _exact_object(value: Any, fields: set[str], label: str) -> dict[str, Any]:
     return value
 
 
+def _file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    try:
+        with path.open("rb") as source:
+            for chunk in iter(lambda: source.read(1024 * 1024), b""):
+                digest.update(chunk)
+    except OSError as exc:
+        raise RefusalError("local Golden Corpus file cannot be read") from exc
+    return digest.hexdigest()
+
+
 def verify_provenance(
     manifest: dict[str, Any],
     evidence: Any,
     policy: Any,
     repository_paths: dict[str, str | Path] | None,
+    golden_corpus_path: str | Path | None = None,
 ) -> None:
     trusted = load_trust_policy(policy)
     if not trusted["artifact_repositories"]:
@@ -176,12 +188,20 @@ def verify_provenance(
         raise VerificationError("provenance evidence must define all protected roles")
     if not isinstance(repository_paths, dict) or set(repository_paths) != set(ROLES):
         raise RefusalError("local paths for all four trusted repositories are required")
+    if golden_corpus_path is None:
+        raise RefusalError("local Golden Corpus bytes are required")
+    corpus_path = Path(golden_corpus_path).expanduser()
+    if not corpus_path.is_file():
+        raise RefusalError("local Golden Corpus file is unavailable")
 
     payload = manifest["payload"]
     inputs = payload["release_inputs"]
     specification = payload["specification"]
     artifact = payload["artifact"]
     declared_provenance = payload["provenance"]
+    corpus_digest = _file_sha256(corpus_path)
+    if corpus_digest != inputs["golden_corpus_sha256"]:
+        raise VerificationError("Golden Corpus SHA-256 mismatch")
     role_shas = {
         "specification": inputs["specification_commit_sha"],
         "implementation": inputs["vnext_commit_sha"],
@@ -299,6 +319,7 @@ def _parser() -> argparse.ArgumentParser:
         metavar="ROLE=PATH",
         help="local Git repository path; repeat once per protected role",
     )
+    parser.add_argument("--golden-corpus", help="local Golden Corpus file to hash")
     parser.add_argument("--policy", default=str(POLICY_PATH))
     return parser
 
@@ -308,6 +329,8 @@ def main(argv: list[str] | None = None) -> int:
         args = _parser().parse_args(argv)
         if not args.evidence:
             raise RefusalError("separate provenance evidence file is required")
+        if not args.golden_corpus:
+            raise RefusalError("local Golden Corpus file is required")
         paths: dict[str, str] = {}
         for value in args.repository:
             role, path = parse_repository_arg(value)
@@ -320,7 +343,7 @@ def main(argv: list[str] | None = None) -> int:
         from release.manifest import validate_manifest_schema
 
         validate_manifest_schema(manifest)
-        verify_provenance(manifest, evidence, policy, paths)
+        verify_provenance(manifest, evidence, policy, paths, args.golden_corpus)
         return report_success({"provenance": "PASS"})
     except (UsageError, RefusalError, VerificationError, OSError, ValueError) as exc:
         return report_failure(exc)
