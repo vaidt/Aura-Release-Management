@@ -1,0 +1,9 @@
+{
+  "payload": {
+    "manifest_type": "AURA_RELEASE_MANIFEST",
+    "manifest_version": "1.2",
+    "protocol_profile": "AURA-M0",
+    "release_version": "0.1.0",
+    "status": "DRAFT"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "repositories": {
+    "specification": "vaidt/aura-specification",
+    "implementation": "vaidt/Aura-vNEXT",
+    "tck": "vaidt/Aura-Conformance-Kit",
+    "assurance": "vaidt/Aura-Guard"
+  },
+  "artifact_repositories": []
+}

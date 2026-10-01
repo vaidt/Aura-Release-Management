@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:aura:release-manifest:m0:1.2",
+  "title": "AURA Release Manifest M0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["payload"],
+  "properties": {
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest_type",
+        "manifest_version",
+        "protocol_profile",
+        "release_version",
+        "status"
+      ],
+      "properties": {
+        "manifest_type": {"const": "AURA_RELEASE_MANIFEST"},
+        "manifest_version": {"const": "1.2"},
+        "protocol_profile": {"const": "AURA-M0"},
+        "release_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "status": {
+          "enum": [
+            "DRAFT",
+            "RELEASE_CANDIDATE",
+            "VERIFIED",
+            "SIGNED",
+            "RELEASE_PROMOTED",
+            "REJECTED"
+          ]
+        },
+        "release_inputs": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "specification_commit_sha": {"$ref": "#/$defs/gitSha"},
+            "golden_corpus_sha256": {"$ref": "#/$defs/sha256"},
+            "vnext_commit_sha": {"$ref": "#/$defs/gitSha"},
+            "tck_commit_sha": {"$ref": "#/$defs/gitSha"},
+            "assurance_commit_sha": {"$ref": "#/$defs/gitSha"}
+          }
+        },
+        "release_inputs_digest": {"$ref": "#/$defs/sha256"},
+        "specification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["repository", "ref", "commit_sha"],
+          "properties": {
+            "repository": {"type": "string", "minLength": 1},
+            "ref": {"const": "refs/tags/M0-BASELINE-v1.0"},
+            "commit_sha": {"$ref": "#/$defs/gitSha"}
+          }
+        },
+        "artifact": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "repository", "digest"],
+          "properties": {
+            "type": {"const": "oci_container"},
+            "repository": {"type": "string", "minLength": 1},
+            "digest": {"$ref": "#/$defs/ociDigest"}
+          }
+        },
+        "build": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["orchestrator", "workflow_run_id", "toolchain"],
+          "properties": {
+            "orchestrator": {"const": "Aura-Release-Management"},
+            "workflow_run_id": {"type": "string", "minLength": 1},
+            "toolchain": {
+              "type": "object",
+              "additionalProperties": {"type": "string"}
+            }
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["implementation", "tck", "assurance"],
+          "properties": {
+            "implementation": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["evidence_sha256"],
+              "properties": {
+                "evidence_sha256": {"$ref": "#/$defs/sha256"}
+              }
+            },
+            "tck": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "matrix_version",
+                "evidence_sha256",
+                "tested_artifact_digest",
+                "golden_corpus_sha256"
+              ],
+              "properties": {
+                "matrix_version": {"type": "string", "minLength": 1},
+                "evidence_sha256": {"$ref": "#/$defs/sha256"},
+                "tested_artifact_digest": {"$ref": "#/$defs/ociDigest"},
+                "golden_corpus_sha256": {"$ref": "#/$defs/sha256"}
+              }
+            },
+            "assurance": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["evidence_sha256"],
+              "properties": {
+                "evidence_sha256": {"$ref": "#/$defs/sha256"}
+              }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": ["status"],
+            "properties": {
+              "status": {
+                "enum": [
+                  "RELEASE_CANDIDATE",
+                  "VERIFIED",
+                  "SIGNED",
+                  "RELEASE_PROMOTED"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "release_inputs",
+              "release_inputs_digest",
+              "specification",
+              "artifact",
+              "build",
+              "provenance"
+            ],
+            "properties": {
+              "release_inputs": {
+                "required": [
+                  "specification_commit_sha",
+                  "golden_corpus_sha256",
+                  "vnext_commit_sha",
+                  "tck_commit_sha",
+                  "assurance_commit_sha"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "key_id", "payload_canonical_sha256", "value"],
+      "properties": {
+        "algorithm": {"const": "Ed25519"},
+        "key_id": {"type": "string", "minLength": 1},
+        "payload_canonical_sha256": {"$ref": "#/$defs/sha256"},
+        "value": {"type": "string", "pattern": "^[A-Za-z0-9+/]+={0,2}$"}
+      }
+    }
+  },
+  "$defs": {
+    "gitSha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "ociDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["payload"],
+        "properties": {
+          "payload": {
+            "required": ["status"],
+            "properties": {
+              "status": {"enum": ["SIGNED", "RELEASE_PROMOTED"]}
+            }
+          }
+        }
+      },
+      "then": {"required": ["signature"]}
+    }
+  ]
+}
