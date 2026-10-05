@@ -23,7 +23,6 @@ from release.errors import RefusalError, VerificationError
 POLICY_PATH = (
     Path(__file__).resolve().parent.parent / "policy" / "trusted_repositories.json"
 )
-import re
 SPECIFICATION_REF_PATTERN = re.compile(r"^refs/tags/M0-BASELINE-v[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?$")
 GIT_SHA = re.compile(r"^[0-9a-f]{40}$")
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
