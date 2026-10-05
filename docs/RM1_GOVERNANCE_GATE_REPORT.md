@@ -136,7 +136,7 @@ The entries below distinguish artifact claims from independently checked facts. 
 - `GOVERNANCE_STATUS_INDEX.md` calls M1 the current record of reference and P-008 historical. The index is unsigned and non-constitutive; its routing statement does not establish a constitutive transition from pending to executed.
 - Current specification main commit: `5ba3567b79c7ac7ff37e0508219c12dab349ca2d`. Its tag listing was empty. The TCK tag listing was empty. The vNEXT tree has no M0 baseline tag; GitHub reports its default ref as `claude/aura-vnext-genesis-xerti8` at `bdec831c165b3a5465bc25f325ed801558cbf81a`.
 - Local RM-0 state: clean branch `copilot/rm-1-governance-recovery`, HEAD `ef978ae01d1eb6de0a86a6c7f0f2de74006e06e4`, no local tags. `git show --show-signature HEAD` could not verify the GitHub merge signature because the public key was unavailable. The tracked tree has no M0 baseline, TCK admission record, Golden Corpus, governance gate report, or production-release evidence before this report.
-- `/home/runner/work/Aura-Release-Management/Aura-Release-Management/README.md` identifies RM-0 as a release-management consumer, not protocol authority or TCK, and says corpus contents and protocol semantics are not modified. `/home/runner/work/Aura-Release-Management/Aura-Release-Management/schemas/AURA_RELEASE_MANIFEST_M0.schema.json` binds the consumer schema to `refs/tags/M0-BASELINE-v1.0`; no such tag is present locally or in the inspected specification tag listing.
+- [`README.md`](../README.md) identifies RM-0 as a release-management consumer, not protocol authority or TCK, and says corpus contents and protocol semantics are not modified. [`schemas/AURA_RELEASE_MANIFEST_M0.schema.json`](../schemas/AURA_RELEASE_MANIFEST_M0.schema.json) binds the consumer schema to `refs/tags/M0-BASELINE-v1.0`; no such tag is present locally or in the inspected specification tag listing.
 
 ## FINDINGS
 
@@ -175,5 +175,5 @@ Obtain a governance-authorized, constitutive instrument that explicitly resolves
 ## MUTATIONS
 
 - During the verification phase: none.
-- This report adds only `/home/runner/work/Aura-Release-Management/Aura-Release-Management/docs/RM1_GOVERNANCE_GATE_REPORT.md`.
+- This report adds only [`docs/RM1_GOVERNANCE_GATE_REPORT.md`](RM1_GOVERNANCE_GATE_REPORT.md).
 - No protocol semantics, governance records, signatures, other repositories, vectors, TCK corpus, manifest, Golden Corpus, baseline, or tag were changed or created. No production deployment or release was performed.
