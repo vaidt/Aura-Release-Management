@@ -1,0 +1,37 @@
+# AURA SYSTEM STATE MANIFEST — M0 RELEASE CANDIDATE 0
+Artifact_ID: AURA-SYSTEM-STATE-MANIFEST-M0-RC0
+Manifest_Type: CROSS_REPOSITORY_STATE_BINDING
+Status: RELEASE_CANDIDATE
+Effective_Date: 2026-10-05
+Authority_Binding: RATIFIED_AND_SIGNED
+Purpose: Bind verified cross-repository AURA system state to immutable Git commit identifiers and established version baseline 0.1.0-DRAFT.
+
+release_version: "0.1.0-DRAFT"
+protocol_version: "0.1.0-DRAFT"
+
+specification:
+  repository: "vaidt/aura-specification"
+  ref: "refs/tags/M0-BASELINE-v0.1.0-DRAFT"
+  commit_sha: "5ba3567b79c7ac7ff37e0508219c12dab349ca2d"
+
+domains:
+  authority:
+    repository: "vaidt/Authority"
+    ref: "refs/heads/main"
+    commit_sha: "117ba7af2f6510c9663c5ec253550c34bc85275a"
+  implementation:
+    repository: "vaidt/Aura-vNEXT"
+    ref: "refs/heads/claude/aura-vnext-genesis-xerti8"
+    commit_sha: "bdec831c165b3a5465bc25f325ed801558cbf81a"
+  conformance:
+    repository: "vaidt/Aura-Conformance-Kit"
+    ref: "refs/heads/main"
+    commit_sha: "2982c5c0060cfba2b7229c23acb5530014d02125"
+  assurance:
+    repository: "vaidt/Aura-Guard"
+    ref: "refs/heads/main"
+    commit_sha: "7d2f5746ae61a66edcd11d75bff0787bed854363"
+  release_control:
+    repository: "vaidt/Aura-Release-Management"
+    ref: "refs/heads/main"
+    commit_sha: "6bfe7aa000000000000000000000000000000000"
