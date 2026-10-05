@@ -53,7 +53,7 @@
           "properties": {
             "repository": {"type": "string", "minLength": 1},
             "ref": {"type": "string",
-              "pattern": "^refs/tags/M0-BASELINE-v[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?$"},
+              "pattern": "^refs/tags/M0-BASELINE-v[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$"},
             "commit_sha": {"$ref": "#/$defs/gitSha"}
           }
         },
