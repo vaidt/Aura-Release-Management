@@ -23,7 +23,8 @@ from release.errors import RefusalError, VerificationError
 POLICY_PATH = (
     Path(__file__).resolve().parent.parent / "policy" / "trusted_repositories.json"
 )
-SPECIFICATION_REF = "refs/tags/M0-BASELINE-v1.0"
+import re
+SPECIFICATION_REF_PATTERN = re.compile(r"^refs/tags/M0-BASELINE-v[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?$")
 GIT_SHA = re.compile(r"^[0-9a-f]{40}$")
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 ROLES = ("specification", "implementation", "tck", "assurance")
@@ -123,9 +124,11 @@ def _check_commit(
         raise VerificationError("vNEXT working tree is not clean")
 
 
-def _check_specification_ref(path: Path, expected_sha: str) -> None:
+def _check_specification_ref(path: Path, reference: str, expected_sha: str) -> None:
+    if not isinstance(reference, str) or not SPECIFICATION_REF_PATTERN.fullmatch(reference):
+        raise ValueError("specification tag does not match approved M0 form")
     resolved = _run_git(
-        path, "rev-parse", "--verify", f"{SPECIFICATION_REF}^{{commit}}"
+        path, "rev-parse", "--verify", f"{reference}^{{commit}}"
     ).decode("ascii", errors="strict").strip()
     if resolved != expected_sha:
         raise VerificationError("specification tag does not resolve to declared SHA")
@@ -232,12 +235,12 @@ def verify_provenance(
     spec = records["specification"]
     if (
         specification["repository"] != trusted["repositories"]["specification"]
-        or spec["ref"] != SPECIFICATION_REF
-        or specification["ref"] != SPECIFICATION_REF
+        
+        or spec["ref"] != specification["ref"]
         or specification["commit_sha"] != role_shas["specification"]
     ):
         raise VerificationError("specification identity does not match trusted policy")
-    _check_specification_ref(paths["specification"], role_shas["specification"])
+    _check_specification_ref(paths["specification"], specification["ref"], role_shas["specification"])
 
     implementation_bytes = _read_committed_file(
         paths["implementation"],

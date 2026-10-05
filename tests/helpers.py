@@ -77,7 +77,7 @@ def make_context(root: Path) -> dict[str, Any]:
     _git(
         repositories["specification"],
         "tag",
-        "M0-BASELINE-v1.0",
+        "M0-BASELINE-v0.1.0-DRAFT",
         shas["specification"],
     )
 
@@ -122,7 +122,7 @@ def make_context(root: Path) -> dict[str, Any]:
     evidence = {
         "specification": {
             "repository": REPOSITORIES["specification"],
-            "ref": "refs/tags/M0-BASELINE-v1.0",
+            "ref": "refs/tags/M0-BASELINE-v0.1.0-DRAFT",
             "commit_sha": shas["specification"],
         },
         "implementation": {
@@ -152,7 +152,7 @@ def make_context(root: Path) -> dict[str, Any]:
             "release_inputs_digest": compute_inputs_digest(inputs),
             "specification": {
                 "repository": REPOSITORIES["specification"],
-                "ref": "refs/tags/M0-BASELINE-v1.0",
+                "ref": "refs/tags/M0-BASELINE-v0.1.0-DRAFT",
                 "commit_sha": shas["specification"],
             },
             "artifact": {
