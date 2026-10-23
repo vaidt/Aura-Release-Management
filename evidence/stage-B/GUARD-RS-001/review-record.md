@@ -49,7 +49,7 @@ The integration returned decoded job-log text, not the original compressed GitHu
 ## Open findings
 
 - F-02 OPEN. Combined status has no entries; branch protection returns 403 to the integration. Authorized UI/admin verification required.
-- F-04 OPEN / reassessment required. D-3 output says vaid​t/aura-guard-v1.3; the D-3 fixture retains AuraIDToken/aura-guard-v1.3. Preserve historical bytes; resolve by explicit mapping or an approved new fixture and rerun.
+- F-04 OPEN / reassessment required. D-3 output says vaidt/aura-guard-v1.3; the D-3 fixture retains AuraIDToken/aura-guard-v1.3. Preserve historical bytes; resolve by explicit mapping or an approved new fixture and rerun.
 
 PR #13 remains Draft; ci_execution_wired = false; AURA release remains NO-GO. No merge authorization is implied.
 
