@@ -1,0 +1,85 @@
+{
+  "schema_version": "AURA-STAGE-B-EXTERNAL-CAPTURE-MANIFEST/1.0",
+  "classification": "NON_NORMATIVE_TECHNICAL_EVIDENCE_CAPTURE",
+  "repository": {
+    "full_name": "vaidt/Aura-Release-Management",
+    "base_branch": "main",
+    "base_commit_sha": "6073047b88487d240e5c7f66cf91c57e73c578de",
+    "deposit_path": "evidence/stage-B/GUARD-RS-001/"
+  },
+  "source": {
+    "repository": "vaidt/aura-guard-v1.3",
+    "workflow_run_id": 39980864075,
+    "job_id": 120511056573,
+    "job_name": "GUARD-RS-001 concurrent HTTP stress + replay",
+    "run_url": "https://github.com/vaidt/aura-guard-v1.3/actions/runs/39980864075",
+    "job_url": "https://github.com/vaidt/aura-guard-v1.3/actions/runs/39980864075/job/120511056573",
+    "event": "pull_request",
+    "run_status": "completed",
+    "run_conclusion": "success"
+  },
+  "source_revision": {
+    "pr_number": 13,
+    "pr_head_sha": "dd08cf46677153295511b2691e3da0aea5d13c25",
+    "pr_base_sha": "e0ed7a8b381b725fe65bd86716894bfdf17d3a94",
+    "runner_checkout_merge_sha": "dc777266a08ecae57f2aed3b37e7593e7a93001d",
+    "merge_parents": [
+      "e0ed7a8b381b725fe65bd86716894bfdf17d3a94",
+      "dd08cf46677153295511b2691e3da0aea5d13c25"
+    ],
+    "run_reported_head_sha": "dd08cf46677153295511b2691e3da0aea5d13c25"
+  },
+  "archive": {
+    "filename": "GUARD-RS-001_JOB_LOG_CAPTURE_39980864075_120511056573.zip",
+    "size_bytes": 47104,
+    "sha256": "f09b6cade51f2be776cbc529b67b2b0d140865f222f6161bd4dbcbc29b53a391",
+    "payload_manifest": "payload-manifest.json"
+  },
+  "log_member": {
+    "filename": "GUARD-RS-001_JOB_LOG_CAPTURE.txt",
+    "utf8_byte_length": 39182,
+    "sha256": "d16f3eb589d9aea49263851db709a6aabf235898977226bef5202df4845f05d4",
+    "starts_with_utf8_bom": true,
+    "line_feed_count": 523,
+    "crlf_count": 0,
+    "original_compressed_log_bytes_included": false
+  },
+  "d3_artifact_reference": {
+    "filename": "d3-real-chain-rust-output",
+    "artifact_id": 12512947814,
+    "size_bytes": 3217,
+    "sha256": "024988956db987c883ce7071b6d2a2ac3de095f1e7a293ef3cddb8a2d1efb261",
+    "archive_download_url": "https://api.github.com/repos/vaidt/aura-guard-v1.3/actions/artifacts/12512947814/zip",
+    "included_in_capture_zip": false
+  },
+  "identity_lineage": {
+    "schema_version": "AURA-IDENTITY-LINEAGE-NOTE/1.0",
+    "classification": "NON_CONSTITUTIVE_TRACEABILITY_NOTE",
+    "current_github_account": "vaidt",
+    "current_evidence_repository": "vaidt/Aura-Release-Management",
+    "legacy_identifiers": [
+      "Aura-IDToken",
+      "AuraIDToken"
+    ],
+    "rule": "Legacy labels remain unchanged inside historical source artifacts. Record them as provenance; do not rewrite historical bytes or silently treat them as the current account/repository identity.",
+    "basis": "Explicit project-owner clarification in this conversation."
+  },
+  "observed_validation": {
+    "check_runs_total": 17,
+    "all_check_runs_success": true,
+    "requests_sent": 500,
+    "http_requests_succeeded": 500,
+    "max_parallel_workers": 200,
+    "jsonl_entries": 500,
+    "replay_entries": 500,
+    "replay_segments": 10,
+    "verified_lineage": true,
+    "verified_segments": true
+  },
+  "limitations": [
+    "The connected GitHub action returned decoded job-log text, not the original compressed log download. SHA-256 binds the UTF-8 serialization of the full returned text.",
+    "F-02 and F-04 remain open; no governance acceptance or merge authorization is implied.",
+    "The older AuraIDToken target in the D-3 fixture is preserved as historical content; no source artifact bytes were rewritten."
+  ],
+  "created_at_utc": "2026-10-23T17:49:35.819Z"
+}
